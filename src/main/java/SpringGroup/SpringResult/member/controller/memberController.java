@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/members")
+@RequestMapping("/member")
 public class memberController {
 
   // final: 한 번 할당되면 변경할 수 없는 상수를 선언
