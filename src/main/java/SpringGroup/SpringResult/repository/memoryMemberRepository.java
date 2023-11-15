@@ -4,7 +4,10 @@ import SpringGroup.SpringResult.domain.member;
 
 import java.util.*;
 
+import org.springframework.stereotype.Repository;
+
 // memoryMemberRepository가 memberRepository(인터페이스)를 구현
+@Repository
 public class memoryMemberRepository implements memberRepository {
 
   // Map: java의 데이터 저장 방식 중 하나
