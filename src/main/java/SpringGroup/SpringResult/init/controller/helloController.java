@@ -1,4 +1,4 @@
-package SpringGroup.SpringResult.domain.init.controller;
+package SpringGroup.SpringResult.init.controller;
 
 // Annotation 사용을 위해
 import org.springframework.stereotype.Controller;
