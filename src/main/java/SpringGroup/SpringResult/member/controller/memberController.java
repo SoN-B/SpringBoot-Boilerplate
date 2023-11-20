@@ -3,12 +3,14 @@ package SpringGroup.SpringResult.member.controller;
 import SpringGroup.SpringResult.domain.member;
 import SpringGroup.SpringResult.repository.memoryMemberRepository;
 import SpringGroup.SpringResult.service.memberService;
+
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
+import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/member")
 public class memberController {
 
@@ -28,8 +30,14 @@ public class memberController {
   }
 
   @PostMapping
+  @ResponseBody
   public member createMember(@RequestBody member member) {
     return memberService.join(member);
+  }
+
+  @GetMapping("/page/new") // localhost::8080/member/page/new
+  public String createForm() {
+    return "member/createMemberForm";
   }
 
   @GetMapping("/{id}")
@@ -38,6 +46,7 @@ public class memberController {
   }
 
   @GetMapping
+  @ResponseBody
   public List<member> getAllMembers() {
     return repository.findAll();
   }
