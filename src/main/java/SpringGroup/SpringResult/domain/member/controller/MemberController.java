@@ -2,7 +2,6 @@ package SpringGroup.SpringResult.domain.member.controller;
 
 import SpringGroup.SpringResult.domain.member.dto.MemberDto;
 import SpringGroup.SpringResult.domain.member.model.Member;
-import SpringGroup.SpringResult.domain.member.repository.MemoryMemberRepository;
 import SpringGroup.SpringResult.domain.member.service.MemberService;
 
 import org.springframework.stereotype.Controller;
