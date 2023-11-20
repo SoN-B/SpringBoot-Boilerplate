@@ -14,7 +14,6 @@ import java.util.List;
 @Controller
 @RequestMapping("/member")
 public class MemberController {
-
   // final: 한 번 할당되면 변경할 수 없는 상수를 선언
   // 즉, repository는 생성자에서 한 번 초기화되고 나면 변경되지 않습니다.
   private final MemberService memberService;
@@ -28,14 +27,27 @@ public class MemberController {
     this.memberService = memberService;
   }
 
-  // @GetMapping
-  // @ResponseBody
-  // public List<member> getAllMembers() {
-  // return repository.findAll();
-  // }
+  @GetMapping("/page/create") // localhost::8080/member/page/create
+  public String createForm() {
+    return "member/create";
+  }
 
+  @GetMapping
+  public String list(Model model) {
+    List<Member> members = memberService.findAll(); // 회원 List 가져옴
+
+    model.addAttribute("members", members); // 회원 List를 model에 넣음
+    return "member/list";
+  }
+
+  @GetMapping("/{id}")
+  @ResponseBody
+  public Optional<Member> getMember(@PathVariable Long id) {
+    return memberService.findById(id);
+  }
+
+  // Json 형태로 데이터를 받아옴
   // @PostMapping
-  // @ResponseBody
   // public member createMember(@RequestBody member member) {
   // return memberService.join(member);
   // }
@@ -48,24 +60,5 @@ public class MemberController {
     memberService.join(member); // member 객체로 join(회원가입)
 
     return "redirect:/"; // 바로 "localhost::8080/" 화면으로 이동
-  }
-
-  @GetMapping("/page/new") // localhost::8080/member/page/new
-  public String createForm() {
-    return "member/createMemberForm";
-  }
-
-  @GetMapping("/{id}")
-  @ResponseBody
-  public Optional<Member> getMember(@PathVariable Long id) {
-    return memberService.findById(id);
-  }
-
-  @GetMapping
-  public String list(Model model) {
-    List<Member> members = memberService.findAll(); // 회원 List 가져옴
-
-    model.addAttribute("members", members); // 회원 List를 model에 넣음
-    return "member/list";
   }
 }
