@@ -1,10 +1,12 @@
 package SpringGroup.SpringResult.member.controller;
 
 import SpringGroup.SpringResult.domain.member;
+import SpringGroup.SpringResult.member.dto.memberForm;
 import SpringGroup.SpringResult.repository.memoryMemberRepository;
 import SpringGroup.SpringResult.service.memberService;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -29,10 +31,26 @@ public class memberController {
     this.memberService = memberService;
   }
 
+  // @GetMapping
+  // @ResponseBody
+  // public List<member> getAllMembers() {
+  // return repository.findAll();
+  // }
+
+  // @PostMapping
+  // @ResponseBody
+  // public member createMember(@RequestBody member member) {
+  // return memberService.join(member);
+  // }
+
   @PostMapping
-  @ResponseBody
-  public member createMember(@RequestBody member member) {
-    return memberService.join(member);
+  public String create(memberForm form) {
+    member member = new member(); // member 객체 생성
+    member.setName(form.getName()); // form에서 입력받은 이름을 member 객체 이름으로 넣음
+
+    memberService.join(member); // member 객체로 join(회원가입)
+
+    return "redirect:/"; // 바로 "localhost::8080/" 화면으로 이동
   }
 
   @GetMapping("/page/new") // localhost::8080/member/page/new
@@ -46,8 +64,10 @@ public class memberController {
   }
 
   @GetMapping
-  @ResponseBody
-  public List<member> getAllMembers() {
-    return repository.findAll();
+  public String list(Model model) {
+    List<member> members = repository.findAll(); // 회원 List 가져옴
+
+    model.addAttribute("members", members); // 회원 List를 model에 넣음
+    return "member/list";
   }
 }
