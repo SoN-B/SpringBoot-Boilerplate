@@ -1,6 +1,6 @@
-package SpringGroup.SpringResult.member.dto;
+package SpringGroup.SpringResult.domain.member.dto;
 
-public class memberForm {
+public class MemberDto {
   // createMemberForm의 input의 name 속성 값인 name과 같아야 함
   private String name;
 

@@ -1,4 +1,4 @@
-package SpringGroup.SpringResult.init.controller;
+package SpringGroup.SpringResult.domain.init.controller;
 
 // Annotation 사용을 위해
 import org.springframework.stereotype.Controller;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-public class helloController {
+public class HelloController {
   @GetMapping("hello")
   public String hello(Model model) {
     model.addAttribute("data", "hello!!");

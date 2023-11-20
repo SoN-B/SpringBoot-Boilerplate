@@ -1,9 +1,9 @@
-package SpringGroup.SpringResult.member.controller;
+package SpringGroup.SpringResult.domain.member.controller;
 
-import SpringGroup.SpringResult.domain.member;
-import SpringGroup.SpringResult.member.dto.memberForm;
-import SpringGroup.SpringResult.repository.memoryMemberRepository;
-import SpringGroup.SpringResult.service.memberService;
+import SpringGroup.SpringResult.domain.member.dto.MemberDto;
+import SpringGroup.SpringResult.domain.member.model.Member;
+import SpringGroup.SpringResult.domain.member.repository.MemoryMemberRepository;
+import SpringGroup.SpringResult.domain.member.service.MemberService;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,20 +14,18 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/member")
-public class memberController {
+public class MemberController {
 
   // final: 한 번 할당되면 변경할 수 없는 상수를 선언
   // 즉, repository는 생성자에서 한 번 초기화되고 나면 변경되지 않습니다.
-  private final memoryMemberRepository repository;
-  private final memberService memberService;
+  private final MemberService memberService;
 
   /**
    * memberController의 생성자가 memoryMemberRepository 타입의 빈을 필요로 합니다.
    * Spring IoC 컨테이너에서 해당 타입의 빈을 찾을 수 있게 해야 합니다.
    * (@Repository 어노테이션을 통해 빈으로 등록)
    */
-  public memberController(memoryMemberRepository repository, memberService memberService) {
-    this.repository = repository;
+  public MemberController(MemberService memberService) {
     this.memberService = memberService;
   }
 
@@ -44,8 +42,8 @@ public class memberController {
   // }
 
   @PostMapping
-  public String create(memberForm form) {
-    member member = new member(); // member 객체 생성
+  public String create(MemberDto form) {
+    Member member = new Member(); // member 객체 생성
     member.setName(form.getName()); // form에서 입력받은 이름을 member 객체 이름으로 넣음
 
     memberService.join(member); // member 객체로 join(회원가입)
@@ -59,13 +57,14 @@ public class memberController {
   }
 
   @GetMapping("/{id}")
-  public Optional<member> getMember(@PathVariable Long id) {
-    return repository.findById(id);
+  @ResponseBody
+  public Optional<Member> getMember(@PathVariable Long id) {
+    return memberService.findById(id);
   }
 
   @GetMapping
   public String list(Model model) {
-    List<member> members = repository.findAll(); // 회원 List 가져옴
+    List<Member> members = memberService.findAll(); // 회원 List 가져옴
 
     model.addAttribute("members", members); // 회원 List를 model에 넣음
     return "member/list";
