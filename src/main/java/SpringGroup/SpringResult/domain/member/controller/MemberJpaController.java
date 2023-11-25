@@ -6,19 +6,34 @@ import org.springframework.web.bind.annotation.*;
 
 import SpringGroup.SpringResult.domain.member.model.MemberJpa;
 import SpringGroup.SpringResult.domain.member.repository.MemberJpaRepository;
+import SpringGroup.SpringResult.global.security.JwtTokenProvider;
+import lombok.RequiredArgsConstructor;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/members")
 public class MemberJpaController {
+
+  private final JwtTokenProvider jwtTokenProvider;
   private final MemberJpaRepository repository;
 
-  public MemberJpaController(MemberJpaRepository repository) {
-    this.repository = repository;
-  }
-
+  // 회원가입
   @PostMapping
   public MemberJpa createMember(@RequestBody MemberJpa member) {
     return repository.save(member);
+  }
+
+  // 로그인
+  @PostMapping("/login")
+  public String login(@RequestBody MemberJpa member) {
+    MemberJpa memberJpa = repository.findByEmail(member.getUsername());
+    if (memberJpa == null) {
+      return "회원이 존재하지 않습니다.";
+    } else if (!memberJpa.getPassword().equals(member.getPassword())) {
+      return "비밀번호가 일치하지 않습니다.";
+    } else {
+      return jwtTokenProvider.createToken(memberJpa.getEmail(), memberJpa.getRoles());
+    }
   }
 
   @GetMapping("/{id}")
