@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,14 +25,15 @@ public class MemberJpa implements UserDetails {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @NotEmpty
   @Column(length = 50)
   private String email;
 
-  @NonNull
+  @NotEmpty
   @Column(length = 100)
   private String password;
 
-  @NonNull
+  @NotEmpty
   @Column(unique = true, length = 10) // 유일하고 최대 길이가 10.
   private String name;
 
@@ -74,5 +76,12 @@ public class MemberJpa implements UserDetails {
   @Override
   public boolean isAccountNonLocked() {
     return true;
+  }
+
+  public MemberJpa(String email, String name, String password, List<String> roles) {
+    this.email = email;
+    this.name = name;
+    this.password = password;
+    this.roles = roles;
   }
 }

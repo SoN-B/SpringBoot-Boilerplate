@@ -1,9 +1,15 @@
 package SpringGroup.SpringResult.domain.member.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import SpringGroup.SpringResult.global.response.*;
+import SpringGroup.SpringResult.domain.member.dto.MemberDto.*;
 import SpringGroup.SpringResult.domain.member.model.MemberJpa;
 import SpringGroup.SpringResult.domain.member.repository.MemberJpaRepository;
 import SpringGroup.SpringResult.global.security.JwtTokenProvider;
@@ -19,8 +25,11 @@ public class MemberJpaController {
 
   // 회원가입
   @PostMapping
-  public MemberJpa createMember(@RequestBody MemberJpa member) {
-    return repository.save(member);
+  public ResponseEntity<Response> createMember(@RequestBody @Valid CreateMemberRequest member) {
+    MemberJpa memberInfo = new MemberJpa(member.getEmail(), member.getName(), member.getPassword(), member.getRoles());
+
+    repository.save(memberInfo);
+    return ResponseEntity.ok(Response.success("Member created."));
   }
 
   // 로그인
@@ -28,23 +37,32 @@ public class MemberJpaController {
   public String login(@RequestBody MemberJpa member) {
     MemberJpa memberJpa = repository.findByEmail(member.getUsername());
     if (memberJpa == null) {
-      return "회원이 존재하지 않습니다.";
+      return "Member does not exist.";
     } else if (!memberJpa.getPassword().equals(member.getPassword())) {
-      return "비밀번호가 일치하지 않습니다.";
+      return "Password is incorrect.";
     } else {
       return jwtTokenProvider.createToken(memberJpa.getEmail(), memberJpa.getRoles());
     }
   }
 
+  // 특정 회원 정보 조회
   @GetMapping("/{id}")
-  public MemberJpa getMember(@PathVariable Long id) {
-    return repository.findById(id).orElse(null);
-    // orElse(null): 값이 없을 때 null을 반환
+  public ResponseEntity<Response> getMember(@PathVariable Long id) {
+    MemberJpa member = repository.findById(id).orElse(null); // orElse(null): 값이 없을 때 null을 반환
+
+    MemberInfo memberInfo = MemberInfo.from(member);
+    return ResponseEntity.ok(Response.success(memberInfo));
   }
 
+  // 모든 회원 정보 조회
   @GetMapping
-  public List<MemberJpa> getAllMembers() {
-    return repository.findAll();
+  public ResponseEntity<Response> getAllMembers() {
+    List<MemberJpa> members = repository.findAll();
+
+    List<MemberInfo> memberInfos = members.stream()
+        .map(MemberInfo::from)
+        .collect(Collectors.toList());
+    return ResponseEntity.ok(Response.success(memberInfos));
   }
 
   @PutMapping("/{id}")

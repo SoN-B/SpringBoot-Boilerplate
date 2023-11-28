@@ -1,16 +1,70 @@
 package SpringGroup.SpringResult.domain.member.dto;
 
-public class MemberDto {
-  // createMemberForm의 input의 name 속성 값인 name과 같아야 함
-  private String name;
+import java.util.List;
 
-  // getter
-  public String getName() {
-    return name;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
+
+import SpringGroup.SpringResult.domain.member.model.MemberJpa;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+public class MemberDto {
+  private Long id;
+  private String name;
+  private String email;
+  private String password;
+  private List<String> roles;
+
+  // 생성자 호출 시 예외 발생 (싱글턴 패턴: 클래스의 인스턴스를 하나만 생성하도록 보장)
+  private MemberDto() throws IllegalStateException {
+    throw new IllegalStateException();
   }
 
-  // setter
-  public void setName(String name) {
-    this.name = name;
+  /******************** Request ********************/
+  @Data
+  @AllArgsConstructor
+  @NoArgsConstructor
+  @Builder
+  public static class CreateMemberRequest {
+    @NotEmpty
+    @Size(max = 10)
+    private String name;
+
+    @NotEmpty
+    @Size(max = 50)
+    private String email;
+
+    @NotEmpty
+    @Size(max = 100)
+    private String password;
+    private List<String> roles;
+  }
+
+  /******************** Response *******************/
+  @Data
+  @AllArgsConstructor
+  @NoArgsConstructor
+  @Builder
+  public static class MemberInfo {
+    // Form input의 속성과 일치시켜야함
+    private Long id;
+    private String name;
+    private String email;
+    private String password;
+    private List<String> roles;
+
+    public static MemberInfo from(MemberJpa member) {
+      return MemberInfo.builder()
+          .id(member.getId())
+          .name(member.getName())
+          .email(member.getEmail())
+          .password(member.getPassword())
+          .roles(member.getRoles())
+          .build();
+    }
   }
 }
