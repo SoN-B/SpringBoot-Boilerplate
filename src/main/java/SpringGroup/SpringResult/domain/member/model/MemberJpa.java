@@ -17,8 +17,6 @@ import lombok.*;
 @Data
 @Entity // 엔티티 정의
 @Table(name = "member_table") // 사용하지 않으면 클래스 이름이 테이블 이름이 됨
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberJpa implements UserDetails {
@@ -49,34 +47,30 @@ public class MemberJpa implements UserDetails {
         .collect(Collectors.toList());
   }
 
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
   @Override
   public String getUsername() {
     return email;
   }
 
+  // 계정이 활성화 되어있는지 (true: 활성화)
   @Override
   public boolean isEnabled() {
     return true;
   }
 
+  // 계정의 비밀번호가 만료되지 않았는지 (true: 인증 정보가 유효함)
   @Override
   public boolean isCredentialsNonExpired() {
     return true;
   }
 
+  // 계정이 만료되지 않았는지 (true: 계정이 유효함)
   @Override
   public boolean isAccountNonExpired() {
     return true;
   }
 
+  // 계정이 잠겨있지 않은지 (true: 잠기지 않음)
   @Override
   public boolean isAccountNonLocked() {
     return true;
