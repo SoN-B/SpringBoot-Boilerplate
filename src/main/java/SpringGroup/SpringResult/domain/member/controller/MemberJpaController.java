@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import SpringGroup.SpringResult.global.response.*;
@@ -34,15 +36,11 @@ public class MemberJpaController {
 
   // 로그인
   @PostMapping("/login")
-  public String login(@RequestBody MemberJpa member) {
+  public ResponseEntity<Response> login(@RequestBody MemberJpa member) {
     MemberJpa memberJpa = repository.findByEmail(member.getUsername());
-    if (memberJpa == null) {
-      return "Member does not exist.";
-    } else if (!memberJpa.getPassword().equals(member.getPassword())) {
-      return "Password is incorrect.";
-    } else {
-      return jwtTokenProvider.createToken(memberJpa.getEmail(), memberJpa.getRoles());
-    }
+
+    String token = jwtTokenProvider.createToken(memberJpa.getEmail(), memberJpa.getRoles());
+    return ResponseEntity.ok(Response.success(token, "Login success."));
   }
 
   // 특정 회원 정보 조회
@@ -80,8 +78,12 @@ public class MemberJpaController {
     // 그렇지 않으면 괄호 안의 람다 표현식을 실행
   }
 
+  // 회원 정보 삭제 (자신의 정보만 삭제 가능)
   @DeleteMapping("/{id}")
-  public void deleteMember(@PathVariable Long id) {
+  public void deleteMember(@AuthenticationPrincipal MemberJpa currentUser, @PathVariable Long id) {
+    if (!currentUser.getId().equals(id)) {
+      throw new AccessDeniedException("You can only delete your own information.");
+    }
     repository.deleteById(id);
   }
 }

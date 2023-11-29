@@ -6,8 +6,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
 
-import org.springframework.security.core.userdetails.User;
-import SpringGroup.SpringResult.domain.member.model.MemberJpa;
 import SpringGroup.SpringResult.domain.member.repository.MemberJpaRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -54,14 +52,7 @@ public class JwtTokenProvider {
   // 주어진 JWT 토큰을 이용하여 Authentication 객체를 생성하고 반환
   // Authentication 객체는 Spring Security에서 현재 인증된 사용자의 정보를 담고 있습니다.
   public Authentication getAuthentication(String token) {
-    String userPk = this.getUserPk(token);
-    MemberJpa member = memberJpaRepository.findByEmail(userPk);
-
-    UserDetails userDetails = User.builder()
-        .username(member.getEmail())
-        .password(member.getPassword())
-        .roles(member.getRoles().toArray(new String[0]))
-        .build();
+    UserDetails userDetails = memberJpaRepository.findByEmail(this.getUserPk(token));
     return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
   }
 
