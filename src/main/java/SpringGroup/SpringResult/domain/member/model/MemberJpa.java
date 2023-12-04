@@ -38,6 +38,8 @@ public class MemberJpa implements UserDetails {
   private String name;
 
   @ElementCollection(fetch = FetchType.EAGER)
+  @CollectionTable(name = "member_roles", joinColumns = @JoinColumn(name = "member_id"))
+  @Column(name = "role")
   @Builder.Default
   private List<String> roles = new ArrayList<>();
 

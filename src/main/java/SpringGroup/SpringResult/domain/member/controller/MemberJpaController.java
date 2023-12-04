@@ -81,9 +81,10 @@ public class MemberJpaController {
   // 회원 정보 삭제 (자신의 정보만 삭제 가능)
   @DeleteMapping("/{id}")
   public void deleteMember(@AuthenticationPrincipal MemberJpa currentUser, @PathVariable Long id) {
-    if (!currentUser.getId().equals(id)) {
+    // 자신의 정보만 삭제 가능
+    if (!currentUser.getId().equals(id))
       throw new AccessDeniedException("You can only delete your own information.");
-    }
+
     repository.deleteById(id);
   }
 }
