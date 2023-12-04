@@ -63,19 +63,23 @@ public class MemberJpaController {
     return ResponseEntity.ok(Response.success(memberInfos));
   }
 
+  // 회원 정보 수정 (자신의 정보만 수정 가능)
   @PutMapping("/{id}")
-  public MemberJpa updateMember(@PathVariable Long id, @RequestBody MemberJpa newMember) {
-    return repository.findById(id)
-        .map(member -> {
-          member.setName(newMember.getName());
-          return repository.save(member);
-        })
-        .orElseGet(() -> {
-          newMember.setId(id);
-          return repository.save(newMember);
-        });
-    // orElseGet(): Optional 객체가 MemberJpa 객체를 가지고 있으면 그 객체를 반환하고,
-    // 그렇지 않으면 괄호 안의 람다 표현식을 실행
+  public ResponseEntity<Response> updateMember(@AuthenticationPrincipal MemberJpa currentUser, @PathVariable Long id,
+      @RequestBody @Valid UpdateMemberRequest newMember) {
+    if (!currentUser.getId().equals(id))
+      throw new AccessDeniedException("You can only update your own information.");
+
+    MemberJpa member = repository.findById(id).orElse(null);
+
+    member.setName(newMember.getName());
+    member.setEmail(newMember.getEmail());
+    member.setPassword(newMember.getPassword());
+    member.setRoles(newMember.getRoles());
+
+    repository.save(member);
+
+    return ResponseEntity.ok(Response.success("Member updated."));
   }
 
   // 회원 정보 삭제 (자신의 정보만 삭제 가능)

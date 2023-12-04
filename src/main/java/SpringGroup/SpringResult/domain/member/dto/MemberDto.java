@@ -44,6 +44,25 @@ public class MemberDto {
     private List<String> roles;
   }
 
+  @Data
+  @AllArgsConstructor
+  @NoArgsConstructor
+  @Builder
+  public static class UpdateMemberRequest {
+    @NotEmpty
+    @Size(max = 10)
+    private String name;
+
+    @NotEmpty
+    @Size(max = 50)
+    private String email;
+
+    @NotEmpty
+    @Size(max = 100)
+    private String password;
+    private List<String> roles;
+  }
+
   /******************** Response *******************/
   @Data
   @AllArgsConstructor
