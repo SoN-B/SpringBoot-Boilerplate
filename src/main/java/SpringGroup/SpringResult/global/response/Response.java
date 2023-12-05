@@ -2,6 +2,7 @@ package SpringGroup.SpringResult.global.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import SpringGroup.SpringResult.global.exception.CustomException;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -56,6 +57,15 @@ public class Response<T> {
         .code(200)
         .message(message)
         .data(data)
+        .build();
+  }
+
+  public static <T extends CustomException> Response error(T exception) {
+    return Response.builder()
+        .success(false)
+        .code(exception.getCode())
+        .message(exception.getMessage())
+        .data(null)
         .build();
   }
 }

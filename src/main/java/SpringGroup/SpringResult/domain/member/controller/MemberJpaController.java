@@ -6,12 +6,13 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import SpringGroup.SpringResult.global.exception.ErrorCode;
 import SpringGroup.SpringResult.global.response.*;
 import SpringGroup.SpringResult.domain.member.dto.MemberDto.*;
+import SpringGroup.SpringResult.domain.member.exception.MemberException;
 import SpringGroup.SpringResult.domain.member.model.MemberJpa;
 import SpringGroup.SpringResult.domain.member.repository.MemberJpaRepository;
 import SpringGroup.SpringResult.global.security.JwtTokenProvider;
@@ -68,7 +69,7 @@ public class MemberJpaController {
   public ResponseEntity<Response> updateMember(@AuthenticationPrincipal MemberJpa currentUser, @PathVariable Long id,
       @RequestBody @Valid UpdateMemberRequest newMember) {
     if (!currentUser.getId().equals(id))
-      throw new AccessDeniedException("You can only update your own information.");
+      throw new MemberException(ErrorCode.MEMBER_UNAUTHORIZED_UPDATE);
 
     MemberJpa member = repository.findById(id).orElse(null);
 
@@ -87,7 +88,7 @@ public class MemberJpaController {
   public void deleteMember(@AuthenticationPrincipal MemberJpa currentUser, @PathVariable Long id) {
     // 자신의 정보만 삭제 가능
     if (!currentUser.getId().equals(id))
-      throw new AccessDeniedException("You can only delete your own information.");
+      throw new MemberException(ErrorCode.MEMBER_UNAUTHORIZED_DELETE);
 
     repository.deleteById(id);
   }
