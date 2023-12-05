@@ -15,6 +15,7 @@ import SpringGroup.SpringResult.domain.member.dto.MemberDto.*;
 import SpringGroup.SpringResult.domain.member.exception.MemberException;
 import SpringGroup.SpringResult.domain.member.model.Member;
 import SpringGroup.SpringResult.domain.member.repository.MemberRepository;
+import SpringGroup.SpringResult.domain.member.service.MemberService;
 import SpringGroup.SpringResult.global.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 
@@ -25,6 +26,7 @@ public class MemberController {
 
   private final JwtTokenProvider jwtTokenProvider;
   private final MemberRepository repository;
+  private final MemberService memberService;
 
   // 회원가입
   @PostMapping
@@ -67,19 +69,8 @@ public class MemberController {
   // 회원 정보 수정 (자신의 정보만 수정 가능)
   @PutMapping("/{id}")
   public ResponseEntity<Response> updateMember(@AuthenticationPrincipal Member currentUser, @PathVariable Long id,
-      @RequestBody @Valid UpdateMemberRequest newMember) {
-    if (!currentUser.getId().equals(id))
-      throw new MemberException(ErrorCode.MEMBER_UNAUTHORIZED_UPDATE);
-
-    Member member = repository.findById(id).orElse(null);
-
-    member.setName(newMember.getName());
-    member.setEmail(newMember.getEmail());
-    member.setPassword(newMember.getPassword());
-    member.setRoles(newMember.getRoles());
-
-    repository.save(member);
-
+      @RequestBody @Valid UpdateMemberRequest updateInfo) {
+    memberService.updateMember(currentUser, id, updateInfo);
     return ResponseEntity.ok(Response.success("Member updated."));
   }
 

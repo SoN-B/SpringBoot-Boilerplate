@@ -11,6 +11,7 @@ public enum ErrorCode {
    ****************************************************************/
   MEMBER_UNAUTHORIZED_UPDATE(403, 1000, "Only the owner can change the information."),
   MEMBER_UNAUTHORIZED_DELETE(403, 1001, "Only the owner can delete the information."),
+  MEMBER_NOT_FOUND(404, 1002, "Member not found."),
   ;
 
   private final int statusCode;
