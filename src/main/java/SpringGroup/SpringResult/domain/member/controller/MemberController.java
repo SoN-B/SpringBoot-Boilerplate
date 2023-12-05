@@ -1,64 +1,95 @@
 package SpringGroup.SpringResult.domain.member.controller;
 
-import SpringGroup.SpringResult.domain.member.dto.MemberDto;
-import SpringGroup.SpringResult.domain.member.model.Member;
-import SpringGroup.SpringResult.domain.member.service.MemberService;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import javax.validation.Valid;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-import java.util.List;
+import SpringGroup.SpringResult.global.exception.ErrorCode;
+import SpringGroup.SpringResult.global.response.*;
+import SpringGroup.SpringResult.domain.member.dto.MemberDto.*;
+import SpringGroup.SpringResult.domain.member.exception.MemberException;
+import SpringGroup.SpringResult.domain.member.model.Member;
+import SpringGroup.SpringResult.domain.member.repository.MemberRepository;
+import SpringGroup.SpringResult.global.security.JwtTokenProvider;
+import lombok.RequiredArgsConstructor;
 
-@Controller
-@RequestMapping("/member")
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/members")
 public class MemberController {
-  // final: 한 번 할당되면 변경할 수 없는 상수를 선언
-  // 즉, repository는 생성자에서 한 번 초기화되고 나면 변경되지 않습니다.
-  private final MemberService memberService;
 
-  /**
-   * memberController의 생성자가 memoryMemberRepository 타입의 빈을 필요로 합니다.
-   * Spring IoC 컨테이너에서 해당 타입의 빈을 찾을 수 있게 해야 합니다.
-   * (@Repository 어노테이션을 통해 빈으로 등록)
-   */
-  public MemberController(MemberService memberService) {
-    this.memberService = memberService;
-  }
+  private final JwtTokenProvider jwtTokenProvider;
+  private final MemberRepository repository;
 
-  @GetMapping("/page/create") // localhost::8080/member/page/create
-  public String createForm() {
-    return "member/create";
-  }
-
-  @GetMapping
-  public String list(Model model) {
-    List<Member> members = memberService.findAll(); // 회원 List 가져옴
-
-    model.addAttribute("members", members); // 회원 List를 model에 넣음
-    return "member/list";
-  }
-
-  @GetMapping("/{id}")
-  @ResponseBody
-  public Optional<Member> getMember(@PathVariable Long id) {
-    return memberService.findById(id);
-  }
-
-  // Json 형태로 데이터를 받아옴
-  // @PostMapping
-  // public member createMember(@RequestBody member member) {
-  // return memberService.join(member);
-  // }
-
+  // 회원가입
   @PostMapping
-  public String create(MemberDto form) {
-    Member member = new Member(); // member 객체 생성
-    member.setName(form.getName()); // form에서 입력받은 이름을 member 객체 이름으로 넣음
+  public ResponseEntity<Response> createMember(@RequestBody @Valid CreateMemberRequest member) {
+    Member memberInfo = new Member(member.getEmail(), member.getName(), member.getPassword(), member.getRoles());
 
-    memberService.join(member); // member 객체로 join(회원가입)
+    repository.save(memberInfo);
+    return ResponseEntity.ok(Response.success("Member created."));
+  }
 
-    return "redirect:/"; // 바로 "localhost::8080/" 화면으로 이동
+  // 로그인
+  @PostMapping("/login")
+  public ResponseEntity<Response> login(@RequestBody Member member) {
+    Member memberJpa = repository.findByEmail(member.getUsername());
+
+    String token = jwtTokenProvider.createToken(memberJpa.getEmail(), memberJpa.getRoles());
+    return ResponseEntity.ok(Response.success(token, "Login success."));
+  }
+
+  // 특정 회원 정보 조회
+  @GetMapping("/{id}")
+  public ResponseEntity<Response> getMember(@PathVariable Long id) {
+    Member member = repository.findById(id).orElse(null); // orElse(null): 값이 없을 때 null을 반환
+
+    MemberInfo memberInfo = MemberInfo.from(member);
+    return ResponseEntity.ok(Response.success(memberInfo));
+  }
+
+  // 모든 회원 정보 조회
+  @GetMapping
+  public ResponseEntity<Response> getAllMembers() {
+    List<Member> members = repository.findAll();
+
+    List<MemberInfo> memberInfos = members.stream()
+        .map(MemberInfo::from)
+        .collect(Collectors.toList());
+    return ResponseEntity.ok(Response.success(memberInfos));
+  }
+
+  // 회원 정보 수정 (자신의 정보만 수정 가능)
+  @PutMapping("/{id}")
+  public ResponseEntity<Response> updateMember(@AuthenticationPrincipal Member currentUser, @PathVariable Long id,
+      @RequestBody @Valid UpdateMemberRequest newMember) {
+    if (!currentUser.getId().equals(id))
+      throw new MemberException(ErrorCode.MEMBER_UNAUTHORIZED_UPDATE);
+
+    Member member = repository.findById(id).orElse(null);
+
+    member.setName(newMember.getName());
+    member.setEmail(newMember.getEmail());
+    member.setPassword(newMember.getPassword());
+    member.setRoles(newMember.getRoles());
+
+    repository.save(member);
+
+    return ResponseEntity.ok(Response.success("Member updated."));
+  }
+
+  // 회원 정보 삭제 (자신의 정보만 삭제 가능)
+  @DeleteMapping("/{id}")
+  public void deleteMember(@AuthenticationPrincipal Member currentUser, @PathVariable Long id) {
+    // 자신의 정보만 삭제 가능
+    if (!currentUser.getId().equals(id))
+      throw new MemberException(ErrorCode.MEMBER_UNAUTHORIZED_DELETE);
+
+    repository.deleteById(id);
   }
 }

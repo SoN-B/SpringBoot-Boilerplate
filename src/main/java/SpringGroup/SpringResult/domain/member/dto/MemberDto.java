@@ -5,7 +5,7 @@ import java.util.List;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
-import SpringGroup.SpringResult.domain.member.model.MemberJpa;
+import SpringGroup.SpringResult.domain.member.model.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -76,7 +76,7 @@ public class MemberDto {
     private String password;
     private List<String> roles;
 
-    public static MemberInfo from(MemberJpa member) {
+    public static MemberInfo from(Member member) {
       return MemberInfo.builder()
           .id(member.getId())
           .name(member.getName())

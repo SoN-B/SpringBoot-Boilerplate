@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
 
-import SpringGroup.SpringResult.domain.member.repository.MemberJpaRepository;
+import SpringGroup.SpringResult.domain.member.repository.MemberRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -23,7 +23,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @RequiredArgsConstructor
 @Component
 public class JwtTokenProvider {
-  private final MemberJpaRepository memberJpaRepository;
+  private final MemberRepository memberJpaRepository;
 
   private String secretKey = "springsecretkey";
 
