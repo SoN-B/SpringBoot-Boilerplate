@@ -12,6 +12,8 @@ public enum ErrorCode {
   MEMBER_UNAUTHORIZED_UPDATE(403, 1000, "Only the owner can change the information."),
   MEMBER_UNAUTHORIZED_DELETE(403, 1001, "Only the owner can delete the information."),
   MEMBER_NOT_FOUND(404, 1002, "Member not found."),
+  MEMBER_DUPLICATED_EMAIL(409, 1003, "Email already exists."),
+  MEMBER_PASSWORD_NOT_MATCHED(400, 1004, "Password not matched."),
   ;
 
   private final int statusCode;

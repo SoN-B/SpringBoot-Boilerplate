@@ -41,7 +41,6 @@ public class MemberDto {
     @NotEmpty
     @Size(max = 100)
     private String password;
-    private List<String> roles;
   }
 
   @Data
@@ -60,7 +59,6 @@ public class MemberDto {
     @NotEmpty
     @Size(max = 100)
     private String password;
-    private List<String> roles;
   }
 
   /******************** Response *******************/

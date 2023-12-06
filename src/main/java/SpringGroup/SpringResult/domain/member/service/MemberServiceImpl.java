@@ -1,8 +1,10 @@
 package SpringGroup.SpringResult.domain.member.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class MemberServiceImpl implements MemberService {
   private final JwtTokenProvider jwtTokenProvider;
   private final MemberRepository repository;
+  private final PasswordEncoder passwordEncoder;
 
   @Override
   @Transactional(readOnly = true)
@@ -47,14 +50,28 @@ public class MemberServiceImpl implements MemberService {
   @Override
   @Transactional
   public void register(CreateMemberRequest memberInfo) {
-    Member member = new Member(memberInfo.getEmail(), memberInfo.getName(), memberInfo.getPassword(),
-        memberInfo.getRoles());
+    if (repository.existsByEmail(memberInfo.getEmail()))
+      throw new MemberException(ErrorCode.MEMBER_DUPLICATED_EMAIL);
+
+    String encodedPassword = passwordEncoder.encode(memberInfo.getPassword());
+
+    // 기본 롤 설정
+    List<String> roles = new ArrayList<>();
+    roles.add("USER");
+
+    Member member = new Member(memberInfo.getEmail(), memberInfo.getName(), encodedPassword, roles);
     repository.save(member);
   }
 
   @Override
   public String login(Member memberInfo) {
     Member member = repository.findByEmail(memberInfo.getUsername());
+    if (member == null)
+      throw new MemberException(ErrorCode.MEMBER_NOT_FOUND);
+
+    if (!passwordEncoder.matches(memberInfo.getPassword(), member.getPassword()))
+      throw new MemberException(ErrorCode.MEMBER_PASSWORD_NOT_MATCHED);
+
     return jwtTokenProvider.createToken(member.getEmail(), member.getRoles());
   }
 
@@ -69,7 +86,6 @@ public class MemberServiceImpl implements MemberService {
     member.setName(updateInfo.getName());
     member.setEmail(updateInfo.getEmail());
     member.setPassword(updateInfo.getPassword());
-    member.setRoles(updateInfo.getRoles());
 
     repository.save(member);
   }
@@ -80,6 +96,7 @@ public class MemberServiceImpl implements MemberService {
     if (!currentMember.getId().equals(id))
       throw new MemberException(ErrorCode.MEMBER_UNAUTHORIZED_DELETE);
 
+    repository.findById(id).orElseThrow(() -> new MemberException(ErrorCode.MEMBER_NOT_FOUND));
     repository.deleteById(id);
   }
 }

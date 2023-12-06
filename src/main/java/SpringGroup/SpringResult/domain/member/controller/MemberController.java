@@ -24,6 +24,8 @@ public class MemberController {
    * 회원 가입
    *
    * @param memberInfo 사용자가 입력한 회원 정보 (이름, 이메일, 비밀번호)
+   *
+   * @exception 1. 이미 존재하는 이메일일 경우
    */
   @PostMapping
   public ResponseEntity<Response> register(@RequestBody @Valid CreateMemberRequest memberInfo) {
@@ -34,7 +36,10 @@ public class MemberController {
   /**
    * 로그인
    *
-   * @param memberInfo 사용자가 입력한 회원 정보 (이메일, 비밀번호)
+   * @param memberInfo 사용자가 입력한 회원 정보 (이메일, 비밀번호)\
+   *
+   * @exception 1. 입력한 이메일의 회원 정보가 없을 경우
+   * @exception 2. 입력한 비밀번호가 일치하지 않을 경우
    */
   @PostMapping("/login")
   public ResponseEntity<Response> login(@RequestBody Member memberInfo) {
@@ -74,6 +79,7 @@ public class MemberController {
    * @param updateInfo    수정할 회원 정보 (이름, 이메일, 비밀번호, 권한)
    *
    * @exception 1. 로그인한 회원과 수정하려는 회원 정보가 다를 경우
+   * @exception 2. 수정하려는 회원 정보가 없을 경우
    */
   @PutMapping("/{id}")
   public ResponseEntity<Response> updateMember(@AuthenticationPrincipal Member currentMember, @PathVariable Long id,
@@ -89,6 +95,7 @@ public class MemberController {
    * @param id            삭제할 회원의 id
    *
    * @exception 1. 로그인한 회원과 삭제하려는 회원 정보가 다를 경우
+   * @exception 2. 삭제하려는 회원 정보가 없을 경우
    */
   @DeleteMapping("/{id}")
   public void deleteMember(@AuthenticationPrincipal Member currentMember, @PathVariable Long id) {
