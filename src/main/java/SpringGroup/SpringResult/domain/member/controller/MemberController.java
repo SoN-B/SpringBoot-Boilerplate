@@ -36,7 +36,7 @@ public class MemberController {
   /**
    * 로그인
    *
-   * @param memberInfo 사용자가 입력한 회원 정보 (이메일, 비밀번호)\
+   * @param memberInfo 사용자가 입력한 회원 정보 (이메일, 비밀번호)
    *
    * @exception 1. 입력한 이메일의 회원 정보가 없을 경우
    * @exception 2. 입력한 비밀번호가 일치하지 않을 경우
@@ -76,7 +76,7 @@ public class MemberController {
    *
    * @param currentMember 현재 로그인한 회원 정보
    * @param id            수정할 회원의 id
-   * @param updateInfo    수정할 회원 정보 (이름, 이메일, 비밀번호, 권한)
+   * @param updateInfo    수정할 회원 정보 (이름, 이메일, 비밀번호)
    *
    * @exception 1. 로그인한 회원과 수정하려는 회원 정보가 다를 경우
    * @exception 2. 수정하려는 회원 정보가 없을 경우
