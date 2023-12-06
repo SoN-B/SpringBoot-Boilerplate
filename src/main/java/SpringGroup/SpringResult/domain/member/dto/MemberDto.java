@@ -68,7 +68,7 @@ public class MemberDto {
   @AllArgsConstructor
   @NoArgsConstructor
   @Builder
-  public static class MemberInfo {
+  public static class GetMemberResponse {
     // Form input의 속성과 일치시켜야함
     private Long id;
     private String name;
@@ -76,8 +76,8 @@ public class MemberDto {
     private String password;
     private List<String> roles;
 
-    public static MemberInfo from(Member member) {
-      return MemberInfo.builder()
+    public static GetMemberResponse from(Member member) {
+      return GetMemberResponse.builder()
           .id(member.getId())
           .name(member.getName())
           .email(member.getEmail())
