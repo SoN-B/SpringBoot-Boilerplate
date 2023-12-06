@@ -20,9 +20,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web' // 내장 톰캣, 스프링 웹 MVC 등
 	testImplementation 'org.springframework.boot:spring-boot-starter-test' // JUnit, Mockito, Hamcrest 등의 테스트 라이브러리
 
-	// Thymeleaf 템플릿 엔진
-	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-
 	// 스프링 데이터 JPA
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'mysql:mysql-connector-java:8.0.32'
