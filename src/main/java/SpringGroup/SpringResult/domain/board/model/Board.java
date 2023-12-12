@@ -10,6 +10,7 @@ import lombok.*;
 @Data
 @Entity
 @Table(name = "board_table")
+@NoArgsConstructor
 @AllArgsConstructor
 public class Board {
   @Id
