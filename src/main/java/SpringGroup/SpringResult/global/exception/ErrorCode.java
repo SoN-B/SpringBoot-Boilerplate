@@ -14,6 +14,10 @@ public enum ErrorCode {
   MEMBER_NOT_FOUND(404, 1002, "Member not found."),
   MEMBER_DUPLICATED_EMAIL(409, 1003, "Email already exists."),
   MEMBER_PASSWORD_NOT_MATCHED(400, 1004, "Password not matched."),
+  /***************************************************************
+   * board
+   ****************************************************************/
+  BOARD_UNAUTHORIZED_CREATE(403, 2000, "You must be logged in to create a post."),
   ;
 
   private final int statusCode;
