@@ -3,6 +3,8 @@ package SpringGroup.SpringResult.domain.board.dto;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 
+import SpringGroup.SpringResult.domain.board.model.Board;
+import SpringGroup.SpringResult.domain.member.model.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,5 +32,26 @@ public class BoardDto {
     @NotEmpty
     @Size(max = 255)
     private String content;
+  }
+
+  /******************** Response ********************/
+  @Data
+  @AllArgsConstructor
+  @NoArgsConstructor
+  @Builder
+  public static class GetBoardResponse {
+    private Long id;
+    private String title;
+    private String content;
+    private String author;
+
+    public static GetBoardResponse from(Board board) {
+      return GetBoardResponse.builder()
+          .id(board.getId())
+          .title(board.getTitle())
+          .content(board.getContent())
+          .author(board.getAuthor().getName())
+          .build();
+    }
   }
 }

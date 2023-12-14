@@ -18,6 +18,7 @@ public enum ErrorCode {
    * board
    ****************************************************************/
   BOARD_UNAUTHORIZED_CREATE(403, 2000, "You must be logged in to create a post."),
+  BOARD_NOT_FOUND(404, 2001, "Post not found."),
   ;
 
   private final int statusCode;

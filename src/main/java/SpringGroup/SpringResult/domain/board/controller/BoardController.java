@@ -1,12 +1,13 @@
 package SpringGroup.SpringResult.domain.board.controller;
 
 import SpringGroup.SpringResult.domain.board.dto.BoardDto.CreateBoardRequest;
-
+import SpringGroup.SpringResult.domain.board.dto.BoardDto.GetBoardResponse;
 import SpringGroup.SpringResult.domain.board.service.BoardService;
 import SpringGroup.SpringResult.domain.member.model.Member;
 import SpringGroup.SpringResult.global.response.Response;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -35,20 +36,14 @@ public class BoardController {
 
   /**
    * 모든 게시글 가져오기
+   *
+   * @exception 1. 게시글이 없을 경우
    */
-  // @GetMapping
-  // public ResponseEntity<Response> getAllPosts() throws Exception {
-  // ListOperations<String, String> ops = this.redisTemplate.opsForList();
-  // List<String> postIds = ops.range("postIds", 0, -1);
-
-  // List<Long> postIdLongs = postIds.stream()
-  // .map(Long::valueOf)
-  // .collect(Collectors.toList());
-
-  // List<Board> posts = boardRepository.findAllById(postIdLongs);
-
-  // return ResponseEntity.ok(Response.success(posts));
-  // }
+  @GetMapping
+  public ResponseEntity<Response> getAllPosts() {
+    List<GetBoardResponse> posts = boardService.findAll();
+    return ResponseEntity.ok(Response.success(posts));
+  }
 
   // @GetMapping("/{id}")
   // public Board getPost(@PathVariable String id) throws Exception {
